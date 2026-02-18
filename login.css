@@ -1,0 +1,268 @@
+:root {
+    --primary-color:#570987;
+    --secondary-color:#41cbf9;
+    --accent-color:#c5c6fe;
+    --success-color:#28a745;
+    --error-color:#dc3545;
+    --dark-text-color:#2d2d2d;
+    --gray-text-color:#888888;
+    --light-text-color:#ffffff;
+    --border-radius:12px;
+    --box-shadow:0 10px 30px rgba(0,0,0,0.8);
+}
+
+* {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'EB Geramond', Geneva, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    min-height: 100vh;/* full viewport height */
+    display: flex;
+    justify-content: center; /* horizontal centering */
+    align-items: center;/* vertical centering */
+    padding: 20px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    min-height: 600px;
+    background: #fff;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+.login-section{
+    flex: 1; 
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-section{
+    flex: 1; 
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-section::before { /* ::before means a pseudo-element */
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(197, 198, 254, 0.5); /* accent color added manually because fuck me*/
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+}
+
+.info-section::after {
+    content:"";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(197, 198, 254, 0.5); /* accent color added manually because fuck me*/
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+}
+
+.logo{
+    align-items: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+.logo img {
+    width: auto;
+    height: .1px;
+    margin-right: 10px;
+}
+
+h2{
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--dark-text-color);
+}
+
+.subtext{
+    color: var(--gray-text-color);
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label{
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500; /* don't ask me what ts does*/
+    color: var(--dark-text-color);
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    
+}
+
+.input-with-icon:active {
+    transform: scale(0.98);
+    transition: transform 0.3s ease;
+}
+
+.input-with-icon i{
+    position: absolute;
+    left:15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-text-color);
+    z-index: 1; 
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: border-color 0.3s ease; /* smooth transition on focus */
+}
+
+.form-control:focus {/* what happens when you click on the field ig */
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: #ffffff;
+    box-shadow: 0 0 5px rgba(87, 9, 135, 0.5);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer; /* makes it look all clicky */
+    color: var(--gray-text-color);
+}
+
+.button {
+    display: block; /* makes the button take the full width */
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: #ffff;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer; /*clicky click*/
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.button:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05); /* slight lift on hover */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.button:active {
+    transform: scale(0.98); /* slight shrink on click */
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    color: var(--gray-text-color);
+}
+
+.divider::before, .divider::after {
+    content: "";
+    position: absolute;
+    flex:1;
+    height: 1px;
+    background: var(--dark-text-color);
+}
+
+.info-title {
+    font-size: 32px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.info-subtext {
+    font-size: 18px;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.features {
+    list-style-type: none;
+    position: relative;
+    z-index: 2;
+}
+.features li:hover {
+    transform: scale(1.05);
+    transition: transform 0.5s ease;
+}
+
+.features li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.features i {
+    color: var(--accent-color);
+    margin-right: 15px;
+    background-color: rgba(167, 167, 255, 0.2);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.error-message {
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: var(--error-color);
+    display: none; /* hidden by default */
+}
+
+.success-message {
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: var(--success-color);
+    display: none; /* hidden by default */
+}
+

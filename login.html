@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <title>Fleeter Login Mockup</title>
+</head>
+<body>
+    <div class="container">
+        <section class="login-section">
+            <div class:"logo">
+                <img src="logo.png" alt="Fleeter Logo">
+                <h1>Fleeter Login Mockup</h1>
+            </div>
+            <h2>Welcome back to Fleeter</h2>
+            <p class="subtext">Sign into your account to continue</p>
+            <form class="login-form">
+                <div class="form-group">
+                    <label for="domain">Domain</label>
+                    <div class="input-with-icon">
+                        <i class="fa fa-database"></i>
+                        <input type="ip" id="ip" class="form-control" placeholder="Enter the IP" required>
+                    </div>
+                    <div class="error-message" id="ipError">Please enter a valid IP</div>
+                </div>
+
+                <!--Login form templates on google kind of saved my ass on this one lol-->
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fa fa-envelope"></i>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                <div class="divider"></div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fa fa-lock"></i>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-message" id="passwordError">I'm sure you can think of something more creative you imbecile</div>
+                </div>
+                <button type="submit" class="button" id="loginButton">
+                    <i class="fa fa-sign-in"></i>
+                    Sign in
+                </button>
+            </form>
+        </section>
+
+        <section class="info-section">
+            <h2 class="info-title">Say hi to Fleeter!</h2>
+            <p class="info-subtext">Welcome to the innovative and all in one solution to shut down your friends computers without their consent!</p>
+            <ul class="features">
+                <li>
+                    <i class="fa fa-check"></i>
+                    Approved by our internal Rage-Baiting Committee
+                </li>
+                <li>
+                    <i class="fa fa-check"></i>
+                    Trusted by over 2 people worldwide
+                </li>
+                <li>
+                    <i class="fa fa-times"></i>
+                    New friends not included
+                </li>
+            </ul>
+        </section>
+
+    </div>
+</body>
