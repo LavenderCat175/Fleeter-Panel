@@ -1,0 +1,479 @@
+/*27/05: the following is not my code, but a quick css sheet I threw together using deepseek. I just want to get started on  dashboard Pyscript ASAP. Will rework later.*/
+/*Commit 29/05: The CSS got updated through AI, still didn't go through it myself*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, 'Inter', -apple-system, sans-serif;
+}
+
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #7209b7;
+    --accent: #4cc9f0;
+    --success: #2e7d32;
+    --warning: #ed6c02;
+    --danger: #d32f2f;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-600: #6c757d;
+    --gray-900: #212529;
+    --sidebar-width: 380px;
+    --radius: 1rem;
+    --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+    --shadow-md: 0 12px 28px rgba(0,0,0,0.08);
+    --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+body {
+    background: linear-gradient(145deg, #f0f4ff 0%, #e0e7ff 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ----- NAVBAR (full width, title centered, red logout) ----- */
+.navbar {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
+    padding: 0 2rem;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.logo-area i {
+    font-size: 28px;
+    color: var(--primary);
+}
+.logo-area span {
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--gray-900);
+}
+
+.dashboard-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.2px;
+    color: var(--gray-900);
+    background: rgba(255,255,255,0.7);
+    padding: 0.3rem 1.5rem;
+    border-radius: 40px;
+    backdrop-filter: blur(4px);
+}
+
+.logout-btn {
+    background: var(--danger);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 2px 6px rgba(211,47,47,0.2);
+}
+.logout-btn:hover {
+    background: #b71c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(211,47,47,0.25);
+}
+
+/* ----- MAIN LAYOUT (grid + sidebar) ----- */
+.dashboard-wrapper {
+    display: flex;
+    flex: 1;
+    position: relative;
+}
+
+.tile-container {
+    flex: 1;
+    padding: 2rem;
+    transition: margin-right 0.3s ease;
+}
+
+/* responsive grid – auto‑fills as many tiles as needed */
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.8rem;
+}
+
+/* ----- COMPUTER TILE (flip card) ----- */
+.tile {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    cursor: pointer;
+    height: 280px;
+    perspective: 1200px;
+}
+.tile:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+}
+
+.tile-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+    transform-style: preserve-3d;
+    border-radius: var(--radius);
+}
+
+/* front & back faces */
+.tile-front, .tile-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.tile-front {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    transform: rotateY(180deg);
+}
+
+.tile-back {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+}
+.tile-back i {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+.tile-back h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.tile-back p {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* tile picture area (gradient + optional icon) */
+.tile-picture {
+    height: 55%;
+    background: linear-gradient(125deg, #4c9aff, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.9);
+    position: relative;
+}
+/* individual tile colours */
+.tile[data-computer="1"] .tile-picture { background: linear-gradient(125deg, #4361ee, #7209b7); }
+.tile[data-computer="2"] .tile-picture { background: linear-gradient(125deg, #f72585, #b5179e); }
+.tile[data-computer="3"] .tile-picture { background: linear-gradient(125deg, #38b000, #008000); }
+.tile[data-computer="4"] .tile-picture { background: linear-gradient(125deg, #ff9e00, #f48c06); }
+.tile[data-computer="5"] .tile-picture { background: linear-gradient(125deg, #3a0ca3, #4cc9f0); }
+.tile[data-computer="6"] .tile-picture { background: linear-gradient(125deg, #ef476f, #ff6d00); }
+
+.tile-content {
+    padding: 1rem 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.tile-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+.tile-subtitle {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2e7d32;
+    margin-right: 6px;
+}
+
+/* status variations (demo) */
+.tile[data-status="busy"] .status-dot { background: var(--danger); }
+.tile[data-status="away"] .status-dot { background: var(--warning); }
+
+/* ----- FLIP TRIGGER (CSS only via hidden checkboxes) ----- */
+.computer-checkbox {
+    display: none;
+}
+
+/* flip the card when corresponding checkbox is checked */
+.computer-checkbox:checked + .dashboard-wrapper .tile[for^="comp"] .tile-inner {
+    transform: rotateY(180deg);
+}
+/* but we need a proper selector: each checkbox affects its sibling .dashboard-wrapper.
+    To keep it clean: using :has? not widely supported. Instead we'll use general sibling with IDs.
+    Easier: each tile is a label that toggles its dedicated checkbox.
+    And we use :checked ~ .dashboard-wrapper .tile[for="compX"] .tile-inner.
+    Let's structure HTML so that checkboxes are placed before .dashboard-wrapper.
+*/
+/* because of HTML structure (checkboxes then wrapper), we can do: */
+.computer-checkbox:checked ~ .dashboard-wrapper .tile[for*="comp"] .tile-inner {
+    transform: rotateY(0deg);
+}
+/* but we need to flip only the checked one. Better: specific rule for each ID.
+    To keep it scalable and clean, we'll use a small piece of dynamic CSS ?
+    Wait – user wants NO javascript, so we need to have individual rules.
+    Since the number of computers can be generated later with PyScript, 
+    we can use attribute selector or generate those rules dynamically.
+    For this static demo, I'll generate rules for up to 12 computers using 
+    a CSS pattern that works for any ID with prefix "comp".
+*/
+/* using CSS cascade: when #comp1 is checked, the sibling .dashboard-wrapper finds label[for="comp1"] and flips it */
+#comp1:checked ~ .dashboard-wrapper .tile[for="comp1"] .tile-inner,
+#comp2:checked ~ .dashboard-wrapper .tile[for="comp2"] .tile-inner,
+#comp3:checked ~ .dashboard-wrapper .tile[for="comp3"] .tile-inner,
+#comp4:checked ~ .dashboard-wrapper .tile[for="comp4"] .tile-inner,
+#comp5:checked ~ .dashboard-wrapper .tile[for="comp5"] .tile-inner,
+#comp6:checked ~ .dashboard-wrapper .tile[for="comp6"] .tile-inner,
+#comp7:checked ~ .dashboard-wrapper .tile[for="comp7"] .tile-inner,
+#comp8:checked ~ .dashboard-wrapper .tile[for="comp8"] .tile-inner,
+#comp9:checked ~ .dashboard-wrapper .tile[for="comp9"] .tile-inner,
+#comp10:checked ~ .dashboard-wrapper .tile[for="comp10"] .tile-inner {
+    transform: rotateY(180deg);
+}
+/* unflip others (keep normal state by default) */
+
+/* ----- SIDEBAR (sliding panel) ----- */
+.info-sidebar {
+    position: fixed;
+    top: 70px;
+    right: 0;
+    width: var(--sidebar-width);
+    height: calc(100vh - 70px);
+    background: white;
+    box-shadow: -8px 0 28px rgba(0,0,0,0.08);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    z-index: 95;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-left: 1px solid #eef2f6;
+}
+
+/* show sidebar when ANY computer checkbox is checked */
+#comp1:checked ~ .info-sidebar,
+#comp2:checked ~ .info-sidebar,
+#comp3:checked ~ .info-sidebar,
+#comp4:checked ~ .info-sidebar,
+#comp5:checked ~ .info-sidebar,
+#comp6:checked ~ .info-sidebar {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    padding: 1.8rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.computer-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.computer-badge i {
+    font-size: 2rem;
+    color: var(--primary);
+    background: #e9ecef;
+    padding: 0.7rem;
+    border-radius: 1rem;
+}
+.computer-badge h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.2rem;
+}
+.close-sidebar {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--gray-600);
+    transition: 0.2s;
+}
+.close-sidebar:hover {
+    color: var(--danger);
+}
+
+.sidebar-content {
+    padding: 1.5rem 1.8rem;
+    flex: 1;
+}
+.info-group {
+    margin-bottom: 2rem;
+}
+.info-group h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-600);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+.detail-label {
+    font-weight: 500;
+    color: #495057;
+}
+.detail-value {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.activity-log {
+    background: var(--gray-100);
+    border-radius: 1rem;
+    padding: 0.8rem;
+    max-height: 180px;
+    overflow-y: auto;
+}
+.activity-item {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.action-buttons {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+.action-btn {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--gray-100);
+    color: var(--gray-900);
+}
+.action-btn.terminate {
+    background: #ffebee;
+    color: #c62828;
+}
+.action-btn.block {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+.action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.96);
+}
+
+/* overlay (close sidebar by clicking outside) */
+.sidebar-overlay {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s;
+    z-index: 90;
+}
+#comp1:checked ~ .sidebar-overlay,
+#comp2:checked ~ .sidebar-overlay,
+#comp3:checked ~ .sidebar-overlay,
+#comp4:checked ~ .sidebar-overlay,
+#comp5:checked ~ .sidebar-overlay,
+#comp6:checked ~ .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* dummy close: we need a checkbox that unchecks all */
+.overlay-close {
+    display: none;
+}
+.overlay-close:checked ~ .computer-checkbox:checked ~ .info-sidebar,
+.overlay-close:checked ~ .computer-checkbox {
+    /* trick: use reset via JS? but we promised no JS.
+        We'll provide a "close" button in sidebar that links to a reset checkbox */
+}
+/* better: a "close" label that clicks a reset checkbox */
+.reset-checkbox {
+    display: none;
+}
+.reset-checkbox:checked ~ .computer-checkbox:checked {
+    /* we can't uncheck others with pure CSS.. but we can use a link to a dummy action.
+        For demo, close button will be functional only via JS later. User will add PyScript.
+        To keep pure CSS demo, we can skip close functionality or simulate by page reload? 
+        I'll add a note: close sidebar uses a hidden reset link, for pure CSS it simply redirects to #.
+    */
+}
+
+/* tile flip — toggled by PyScript */
+.tile-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+/* mobile responsive */
+@media (max-width: 780px) {
+    .dashboard-title { font-size: 1rem; padding: 0.2rem 1rem; display: none; }
+    .tile-container { padding: 1rem; }
+    .info-sidebar { width: 100%; }
+    .action-buttons { grid-template-columns: 1fr; }
+    .tile-grid { gap: 1rem; }
+}

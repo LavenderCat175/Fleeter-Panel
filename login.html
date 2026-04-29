@@ -1,3 +1,4 @@
+<!--Commit 29/05: This Page grew up and is no longer a mockup. Added the Socketio and pyscript libraries figuring it out along pyodide is a hastle, and I still don't quite understand them right now. I'll have to dig in. I also added a logo. This page is likely to not be modified further in the forseeable future.-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,14 +9,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    <title>Fleeter Login Mockup</title>
+    <title>Fleeter Login</title>
+    <!--Import SocketIO Library-->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
     <div class="container">
         <section class="login-section">
-            <div class:"logo">
+            <div class="logo">
                 <img src="logo.png" alt="Fleeter Logo">
-                <h1>Fleeter Login Mockup</h1>
+                <h1>Fleeter Dashboard Login</h1>
             </div>
             <h2>Welcome back to Fleeter</h2>
             <p class="subtext">Sign into your account to continue</p>
@@ -28,8 +31,6 @@
                     </div>
                     <div class="error-message" id="ipError">Please enter a valid IP</div>
                 </div>
-
-                <!--Login form templates on google kind of saved my ass on this one lol-->
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <div class="input-with-icon">
@@ -45,7 +46,9 @@
                         <i class="fa fa-lock"></i>
                         <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
                         <button type="button" class="password-toggle" id="passwordToggle">
-                            <i class="fa fa-eye"></i>
+                            <div class="eye-i">
+                                <i class="fa fa-eye"></i>
+                            </div>
                         </button>
                     </div>
                     <div class="error-message" id="passwordError">I'm sure you can think of something more creative you imbecile</div>
@@ -77,4 +80,7 @@
         </section>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+    <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
+    <script type="py" src="login.py"></script>
 </body>

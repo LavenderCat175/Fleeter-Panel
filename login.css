@@ -1,3 +1,4 @@
+/*Commit 29/05: Didn't update the CSS here, likely never will*/
 :root {
     --primary-color:#570987;
     --secondary-color:#41cbf9;
@@ -25,12 +26,6 @@ body {
     justify-content: center; /* horizontal centering */
     align-items: center;/* vertical centering */
     padding: 20px;
-}
-
-.logo img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
 }
 
 .container {
@@ -84,14 +79,15 @@ body {
 }
 
 .logo{
+    display: flex;
     align-items: center;
     margin-bottom: 30px;
     color: var(--primary-color);
 }
 
 .logo img {
-    width: auto;
-    height: .1px;
+    width: 80px;
+    height: auto;
     margin-right: 10px;
 }
 
@@ -139,6 +135,15 @@ h2{
     left:15px;
     top: 50%;
     transform: translateY(-50%);
+    color: var(--gray-text-color);
+    z-index: 1; 
+}
+.eye-i i{
+    position: absolute;
+    left:15px;
+    top: 50%;
+    transform: translateX(-150%);
+    margin-top: -5px;
     color: var(--gray-text-color);
     z-index: 1; 
 }
