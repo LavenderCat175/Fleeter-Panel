@@ -1,5 +1,3 @@
-/*27/05: the following is not my code, but a quick css sheet I threw together using deepseek. I just want to get started on  dashboard Pyscript ASAP. Will rework later.*/
-/*Commit 29/05: The CSS got updated through AI, still didn't go through it myself*/
 * {
     margin: 0;
     padding: 0;
@@ -15,10 +13,10 @@
     --success: #2e7d32;
     --warning: #ed6c02;
     --danger: #d32f2f;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-600: #6c757d;
-    --gray-900: #212529;
+    --gray-1: #f8f9fa;
+    --gray-2: #e9ecef;
+    --gray-3: #6c757d;
+    --gray-4: #212529;
     --sidebar-width: 380px;
     --radius: 1rem;
     --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
@@ -33,7 +31,6 @@ body {
     flex-direction: column;
 }
 
-/* ----- NAVBAR (full width, title centered, red logout) ----- */
 .navbar {
     background: rgba(255,255,255,0.96);
     backdrop-filter: blur(8px);
@@ -61,7 +58,7 @@ body {
 .logo-area span {
     font-weight: 700;
     font-size: 1.35rem;
-    color: var(--gray-900);
+    color: var(--gray-4);
 }
 
 .dashboard-title {
@@ -71,7 +68,7 @@ body {
     font-weight: 600;
     font-size: 1.25rem;
     letter-spacing: -0.2px;
-    color: var(--gray-900);
+    color: var(--gray-4);
     background: rgba(255,255,255,0.7);
     padding: 0.3rem 1.5rem;
     border-radius: 40px;
@@ -99,7 +96,6 @@ body {
     box-shadow: 0 8px 18px rgba(211,47,47,0.25);
 }
 
-/* ----- MAIN LAYOUT (grid + sidebar) ----- */
 .dashboard-wrapper {
     display: flex;
     flex: 1;
@@ -112,22 +108,18 @@ body {
     transition: margin-right 0.3s ease;
 }
 
-/* responsive grid – auto‑fills as many tiles as needed */
 .tile-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 1.8rem;
 }
 
-/* ----- COMPUTER TILE (flip card) ----- */
 .tile {
-    background: white;
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     cursor: pointer;
     height: 280px;
-    perspective: 1200px;
 }
 .tile:hover {
     transform: translateY(-6px);
@@ -138,27 +130,33 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    transition: transform 0.5s ease-in-out;
-    transform-style: preserve-3d;
     border-radius: var(--radius);
+    transition: transform 0.35s ease;
 }
 
-/* front & back faces */
-.tile-front, .tile-back {
+.tile-inner.flipped {
+    transform: scaleX(-1);
+}
+
+.tile-front,
+.tile-back {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     border-radius: var(--radius);
     overflow: hidden;
+    transition: opacity 0.175s ease; /* fires at the halfway squeeze */
 }
 
 .tile-front {
     background: white;
     display: flex;
     flex-direction: column;
-    transform: rotateY(180deg);
+    opacity: 0;
+    transform: scaleX(-1);
+}
+.tile-inner.flipped .tile-front {
+    opacity: 1;
 }
 
 .tile-back {
@@ -170,7 +168,12 @@ body {
     align-items: center;
     text-align: center;
     padding: 1.5rem;
+    opacity: 1;
 }
+.tile-inner.flipped .tile-back {
+    opacity: 0;
+}
+
 .tile-back i {
     font-size: 3.5rem;
     margin-bottom: 1rem;
@@ -185,7 +188,7 @@ body {
     opacity: 0.85;
 }
 
-/* tile picture area (gradient + optional icon) */
+/* tile picture area */
 .tile-picture {
     height: 55%;
     background: linear-gradient(125deg, #4c9aff, #7c3aed);
@@ -196,13 +199,6 @@ body {
     color: rgba(255,255,255,0.9);
     position: relative;
 }
-/* individual tile colours */
-.tile[data-computer="1"] .tile-picture { background: linear-gradient(125deg, #4361ee, #7209b7); }
-.tile[data-computer="2"] .tile-picture { background: linear-gradient(125deg, #f72585, #b5179e); }
-.tile[data-computer="3"] .tile-picture { background: linear-gradient(125deg, #38b000, #008000); }
-.tile[data-computer="4"] .tile-picture { background: linear-gradient(125deg, #ff9e00, #f48c06); }
-.tile[data-computer="5"] .tile-picture { background: linear-gradient(125deg, #3a0ca3, #4cc9f0); }
-.tile[data-computer="6"] .tile-picture { background: linear-gradient(125deg, #ef476f, #ff6d00); }
 
 .tile-content {
     padding: 1rem 1.2rem;
@@ -214,12 +210,12 @@ body {
 .tile-title {
     font-weight: 700;
     font-size: 1.25rem;
-    color: var(--gray-900);
+    color: var(--gray-4);
     margin-bottom: 0.25rem;
 }
 .tile-subtitle {
     font-size: 0.8rem;
-    color: var(--gray-600);
+    color: var(--gray-3);
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -233,53 +229,9 @@ body {
     margin-right: 6px;
 }
 
-/* status variations (demo) */
 .tile[data-status="busy"] .status-dot { background: var(--danger); }
 .tile[data-status="away"] .status-dot { background: var(--warning); }
 
-/* ----- FLIP TRIGGER (CSS only via hidden checkboxes) ----- */
-.computer-checkbox {
-    display: none;
-}
-
-/* flip the card when corresponding checkbox is checked */
-.computer-checkbox:checked + .dashboard-wrapper .tile[for^="comp"] .tile-inner {
-    transform: rotateY(180deg);
-}
-/* but we need a proper selector: each checkbox affects its sibling .dashboard-wrapper.
-    To keep it clean: using :has? not widely supported. Instead we'll use general sibling with IDs.
-    Easier: each tile is a label that toggles its dedicated checkbox.
-    And we use :checked ~ .dashboard-wrapper .tile[for="compX"] .tile-inner.
-    Let's structure HTML so that checkboxes are placed before .dashboard-wrapper.
-*/
-/* because of HTML structure (checkboxes then wrapper), we can do: */
-.computer-checkbox:checked ~ .dashboard-wrapper .tile[for*="comp"] .tile-inner {
-    transform: rotateY(0deg);
-}
-/* but we need to flip only the checked one. Better: specific rule for each ID.
-    To keep it scalable and clean, we'll use a small piece of dynamic CSS ?
-    Wait – user wants NO javascript, so we need to have individual rules.
-    Since the number of computers can be generated later with PyScript, 
-    we can use attribute selector or generate those rules dynamically.
-    For this static demo, I'll generate rules for up to 12 computers using 
-    a CSS pattern that works for any ID with prefix "comp".
-*/
-/* using CSS cascade: when #comp1 is checked, the sibling .dashboard-wrapper finds label[for="comp1"] and flips it */
-#comp1:checked ~ .dashboard-wrapper .tile[for="comp1"] .tile-inner,
-#comp2:checked ~ .dashboard-wrapper .tile[for="comp2"] .tile-inner,
-#comp3:checked ~ .dashboard-wrapper .tile[for="comp3"] .tile-inner,
-#comp4:checked ~ .dashboard-wrapper .tile[for="comp4"] .tile-inner,
-#comp5:checked ~ .dashboard-wrapper .tile[for="comp5"] .tile-inner,
-#comp6:checked ~ .dashboard-wrapper .tile[for="comp6"] .tile-inner,
-#comp7:checked ~ .dashboard-wrapper .tile[for="comp7"] .tile-inner,
-#comp8:checked ~ .dashboard-wrapper .tile[for="comp8"] .tile-inner,
-#comp9:checked ~ .dashboard-wrapper .tile[for="comp9"] .tile-inner,
-#comp10:checked ~ .dashboard-wrapper .tile[for="comp10"] .tile-inner {
-    transform: rotateY(180deg);
-}
-/* unflip others (keep normal state by default) */
-
-/* ----- SIDEBAR (sliding panel) ----- */
 .info-sidebar {
     position: fixed;
     top: 70px;
@@ -297,19 +249,9 @@ body {
     border-left: 1px solid #eef2f6;
 }
 
-/* show sidebar when ANY computer checkbox is checked */
-#comp1:checked ~ .info-sidebar,
-#comp2:checked ~ .info-sidebar,
-#comp3:checked ~ .info-sidebar,
-#comp4:checked ~ .info-sidebar,
-#comp5:checked ~ .info-sidebar,
-#comp6:checked ~ .info-sidebar {
-    transform: translateX(0);
-}
-
 .sidebar-header {
     padding: 1.8rem;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-2);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -335,7 +277,7 @@ body {
     border: none;
     font-size: 1.4rem;
     cursor: pointer;
-    color: var(--gray-600);
+    color: var(--gray-3);
     transition: 0.2s;
 }
 .close-sidebar:hover {
@@ -353,7 +295,7 @@ body {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--gray-600);
+    color: var(--gray-3);
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
@@ -363,7 +305,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 0.7rem 0;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-2);
 }
 .detail-label {
     font-weight: 500;
@@ -371,11 +313,11 @@ body {
 }
 .detail-value {
     font-weight: 600;
-    color: var(--gray-900);
+    color: var(--gray-4);
 }
 
 .activity-log {
-    background: var(--gray-100);
+    background: var(--gray-1);
     border-radius: 1rem;
     padding: 0.8rem;
     max-height: 180px;
@@ -403,8 +345,8 @@ body {
     gap: 0.6rem;
     cursor: pointer;
     transition: all 0.2s;
-    background: var(--gray-100);
-    color: var(--gray-900);
+    background: var(--gray-1);
+    color: var(--gray-4);
 }
 .action-btn.terminate {
     background: #ffebee;
@@ -419,57 +361,6 @@ body {
     filter: brightness(0.96);
 }
 
-/* overlay (close sidebar by clicking outside) */
-.sidebar-overlay {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.2s;
-    z-index: 90;
-}
-#comp1:checked ~ .sidebar-overlay,
-#comp2:checked ~ .sidebar-overlay,
-#comp3:checked ~ .sidebar-overlay,
-#comp4:checked ~ .sidebar-overlay,
-#comp5:checked ~ .sidebar-overlay,
-#comp6:checked ~ .sidebar-overlay {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* dummy close: we need a checkbox that unchecks all */
-.overlay-close {
-    display: none;
-}
-.overlay-close:checked ~ .computer-checkbox:checked ~ .info-sidebar,
-.overlay-close:checked ~ .computer-checkbox {
-    /* trick: use reset via JS? but we promised no JS.
-        We'll provide a "close" button in sidebar that links to a reset checkbox */
-}
-/* better: a "close" label that clicks a reset checkbox */
-.reset-checkbox {
-    display: none;
-}
-.reset-checkbox:checked ~ .computer-checkbox:checked {
-    /* we can't uncheck others with pure CSS.. but we can use a link to a dummy action.
-        For demo, close button will be functional only via JS later. User will add PyScript.
-        To keep pure CSS demo, we can skip close functionality or simulate by page reload? 
-        I'll add a note: close sidebar uses a hidden reset link, for pure CSS it simply redirects to #.
-    */
-}
-
-/* tile flip — toggled by PyScript */
-.tile-inner.flipped {
-    transform: rotateY(180deg);
-}
-
-/* mobile responsive */
 @media (max-width: 780px) {
     .dashboard-title { font-size: 1rem; padding: 0.2rem 1rem; display: none; }
     .tile-container { padding: 1rem; }

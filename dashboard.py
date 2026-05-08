@@ -1,4 +1,3 @@
-#Commit 29/05: Same as the login.py file. Added a demo mode to go around the login.
 import js
 from pyscript import window, document
 from pyodide.ffi import create_proxy, to_js

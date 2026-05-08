@@ -1,12 +1,11 @@
-#Commit 29/05: Finished the login.py file. Still needs the following: 1. Polishing (currently holds on for dear life and some deepseek prompts) 2. The actual login logic (currently it just checks for the IP. If what I understand is correct, the email & password logic is currently not implemented. Could maybe handle that in the future)
-#by the way: pyodide is a pain. I hardly understand any of the documentation and i want to commit sudoku. Some lifechoices were reconsidered during the developement process. Money may have been invested ina premium AI plan.  
 import js
 from pyodide.ffi import create_proxy, to_js
 from pyscript import window, document
+from urllib.parse import urlencode
 
-#Should run when the user hits "Sign In"
+#Should run when the user hits "Sign In":
 
-def sign_in(event):
+async def sign_in(event):
     event.preventDefault()  # Stops the form from submitting and refreshing the page
 
     ip       = document.getElementById("ip").value.strip()
@@ -35,18 +34,48 @@ def sign_in(event):
     btn = document.getElementById("loginButton")
     btn.textContent = "Connecting..."
     btn.disabled = True
+    
+    #Asking Keycloak for a tokenn
+    print("[Login] Requesting token from Keycloak...")
+    token_url = f"http://{ip}:7777/keycloak/realms/fleeter-server/protocol/openid-connect/token"
+    body= urlencode({
+        "grant_type": "password",
+        "client_id": "fleeter-dashboard",
+        "username": email,
+        "password": password,
+    })
 
-    # Connect to the server using SocketIO
-    print(f"[Login] Attempting connection to http://{ip}:3030/enforcer ...")
-    socket = window.io(
-        f"http://{ip}:3030/enforcer",
-        to_js({"reconnection": False, "timeout": 5000})
-        # reconnection: False to prevent automatic retries, timeout: 5000ms before giving up
-    )
+    try:
+        response = await js.fetch(token_url, to_js({
+            "method": "POST",
+            "headers": {"Content-Type": "application/x-www-form-urlencoded"},
+            "body": body
+        }))
+        if not response.ok:
+            raise Exception(f"HTTP error! status: {response.status}")
+        data = await response.json()
+        token = data.access_token
+        print("[Login] Token received from Keycloak.")
+    except Exception as e:
+        print(f"[Login] Failed to get token: {e}")
+        btn.textContent = "Sign In"
+        btn.disabled = False
+        document.getElementById("ipError").style.display = "block"
+        document.getElementById("ipError").textContent = "Failed to authenticate with Keycloak."
+        return
+    
+    #Connect to Socketio with the token 
+    print("[Login] Connecting to Socket.IO server...")
+    socket = window.io(f"http://{ip}:7777", to_js({
+        "reconnection": False,
+        "timeout": 5000,
+        "auth": {"token": token}  # Send the token for authentication
+    }))
 
     def on_connect():
         print("[Login] Connected! Redirecting to dashboard...")
         window.localStorage.setItem("fleeter_ip", ip)  # store IP for the dashboard
+        window.localStorage.setItem("fleeter_token", token)  # store token for future authenticated requests
         socket.disconnect()  # we just needed to verify the server is reachable
         window.location.href = "dashboard.html"  # redirect to dashboard
 
@@ -77,5 +106,6 @@ def toggle_password(event):
         pwd.type = "password"
         icon.classList.remove("fa-eye-slash")
         icon.classList.add("fa-eye")
+
 toggle_btn = document.getElementById("passwordToggle")
 toggle_btn.addEventListener("click", create_proxy(toggle_password))
