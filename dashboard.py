@@ -41,8 +41,8 @@ def init():
     print(f"[Dashboard] Found server IP: {ip}. Connecting to SocketIO...")
 
     socket = window.io(  # assigns to the global socket variable
-        f"http://{ip}:3030/enforcer",
-        to_js({"reconnection": True, "timeout": 5000}) # reconnection: True to automatically retry, timeout: 5000ms before giving up
+        f"http://{ip}:7777/socket/enforcer",
+        to_js({"reconnection": True, "timeout": 5000, "auth": {"token": window.localStorage.getItem("fleeter_token")}}) # reconnection: True to automatically retry, timeout: 5000ms before giving up
     )
 
     def on_connect():
@@ -121,7 +121,7 @@ def update_tile(device_id, blocked):
 
     if device_id == active_device_id:
         btn = document.getElementById("blockButton")
-        btn.innderHTML = '<i class="fas fa-lock-open"></i> Unblock screen' if blocked else '<i class="fas fa-ban"></i> Block screen'
+        btn.innerHTML = '<i class="fas fa-lock-open"></i> Unblock screen' if blocked else '<i class="fas fa-ban"></i> Block screen'
 
 
 
