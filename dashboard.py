@@ -40,9 +40,14 @@ def init():
     
     print(f"[Dashboard] Found server IP: {ip}. Connecting to SocketIO...")
 
-    socket = window.io(  # assigns to the global socket variable
-        f"http://{ip}:7777/socket/enforcer",
-        to_js({"reconnection": True, "timeout": 5000, "auth": {"token": window.localStorage.getItem("fleeter_token")}}) # reconnection: True to automatically retry, timeout: 5000ms before giving up
+    socket = window.io(
+        f"http://{ip}:7777/enforcer",
+        to_js({
+            "path":        "/socket",
+            "reconnection": True,
+            "timeout":      5000,
+            "auth":         {"token": window.localStorage.getItem("fleeter_token")}
+        })
     )
 
     def on_connect():
@@ -198,7 +203,84 @@ def close_sidebar(event):
 
     document.querySelector(".info-sidebar").style.transform = "translateX(100%)"
 
+def set_modal_feedback(text, kind=""):
+    el = document.getElementById("modalFeedback")
+    if not el:
+        return
+    el.textContent = text
+    el.className = f"modal-feedback {kind}"
+
+def open_modal(event):
+    document.getElementById("deviceUUID").value = ""
+    document.getElementById("modalSubmitBtn").disabled = False
+    set_modal_feedback("")
+    document.getElementById("modalOverlay").classList.add("open")
+
+def close_modal(event):
+    document.getElementById("modalOverlay").classList.remove("open")
+    set_modal_feedback("")
+
+def download_token(device_id, token_string):
+    blob = js.Blob.new([token_string], to_js({"type": "text/plain"}))
+    url = js.URL.createObjectURL(blob)
+    a = document.createElement("a")
+    a.href = url
+    a.download = f"{device_id}.tkn"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    js.URL.revokeObjectURL(url)
+
+def submit_new_device(event):
+    device_id = document.getElementById("deviceUUID").value.strip()
+
+    if not device_id:
+        set_modal_feedback("Please enter a device UUID.", "error")
+        return
+
+    btn = document.getElementById("modalSubmitBtn")
+    btn.disabled = True
+    set_modal_feedback("Adding device...")
+
+    if DEMO_MODE:
+        print(f"[Demo] Simulating adding device {device_id}")
+        create_tile(device_id, False)
+        download_token(device_id, f"DEMO_TOKEN_FOR_{device_id}")
+        set_modal_feedback("Device added! Token downloaded.", "success")
+        btn.disabled = False
+        return
+
+    def on_token_ready(data):
+        download_token(device_id, data.new_jwt)
+        set_modal_feedback("Device added! Token downloaded.", "success")
+        btn.disabled = False
+
+    def on_error(data):
+        set_modal_feedback(f"Error: {data.error_message}", "error")
+        btn.disabled = False
+
+    socket.once("register_new_device_success", create_proxy(on_token_ready))
+    socket.once("message_error", create_proxy(on_error))
+    socket.emit("register_new_device", to_js({"device_id": device_id}))
+
+
+def logout(event):
+    print("[Dashboard] Logging out...")
+    window.localStorage.removeItem("fleeter_ip")
+    window.localStorage.removeItem("fleeter_token")
+    if socket:
+        socket.disconnect()
+    window.location.href = "login.html"
+
+def remove_device(event):
+    return # Missing server implementation
+
 document.getElementById("closeSidebar").addEventListener("click", create_proxy(close_sidebar))
 document.getElementById("blockButton").addEventListener("click", create_proxy(toggle_block))
+document.getElementById("removeButton").addEventListener("click", create_proxy(remove_device))
+document.getElementById("logoutBtn").addEventListener("click", create_proxy(logout))
+document.getElementById("addDeviceBtn").addEventListener("click", create_proxy(open_modal))
+document.getElementById("closeModal").addEventListener("click", create_proxy(close_modal))
+document.getElementById("modalSubmitBtn").addEventListener("click", create_proxy(submit_new_device))
 
 init()

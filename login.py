@@ -5,6 +5,8 @@ from urllib.parse import urlencode
 
 #Should run when the user hits "Sign In":
 
+print("hello")
+
 async def sign_in(event):
     event.preventDefault()  # Stops the form from submitting and refreshing the page
 
@@ -40,7 +42,7 @@ async def sign_in(event):
     token_url = f"http://{ip}:7777/keycloak/realms/fleeter-server/protocol/openid-connect/token"
     body= urlencode({
         "grant_type": "password",
-        "client_id": "fleeter-dashboard",
+        "client_id": "fleeter-panel",
         "username": email,
         "password": password,
     })
@@ -66,11 +68,14 @@ async def sign_in(event):
     
     #Connect to Socketio with the token 
     print("[Login] Connecting to Socket.IO server...")
-    socket = window.io(f"http://{ip}:7777", to_js({
+    socket = window.io(f"http://{ip}:7777/enforcer", to_js({
+        "path":        "/socket",
         "reconnection": False,
-        "timeout": 5000,
-        "auth": {"token": token}  # Send the token for authentication
+        "timeout":      5000,
+        "auth":         {"token": token}
     }))
+
+    print("hello")
 
     def on_connect():
         print("[Login] Connected! Redirecting to dashboard...")

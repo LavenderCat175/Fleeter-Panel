@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,10 +19,16 @@
         <div class="dashboard-title">
             <h1>Fleeter Admin Dashboard</h1>
         </div>
-        <button class="logout-button" onclick="alert('Logging out...')">
-        <i class="fas fa-user"></i>
-        Logout
-        </button>
+        <div class="navbar-actions">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-user"></i>
+                Logout
+            </button>
+            <button class="add-device-btn" id="addDeviceBtn">
+                <i class="fas fa-plus"></i>
+                Add Device
+            </button>
+        </div>
     </nav>
     <div class="dashboard-container">
         <div class="tile-container">
@@ -40,7 +46,7 @@
                     <span id="sidebarStatusBadge" style="font-size: 0.8rem; color:#6c757d;">—</span>
                 </div>
             </div>
-            <button class="close-sidebar" id="closeSidebar">x</button>
+            <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
         </div>
         <div class="sidebar-content">
             <div class="info-group">
@@ -60,10 +66,29 @@
                     <button class="action-btn block" id="blockButton">
                         <i class="fas fa-ban"></i> Block screen
                     </button>
+                    <button class="action-btn remove" id="removeButton">
+                        <i class="fas fa-trash"></i> Remove device
+                    </button>
                 </div>
             </div>
         </div>
     </aside>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Add New Device</h3>
+                <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <label for="deviceUUID">Device UUID</label>
+                <input type="text" id="deviceUUID" placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000">
+                <button class="modal-submit-btn" id="modalSubmitBtn">
+                    <i class="fas fa-download"></i> Generate & Download Token
+                </button>
+                <div class="modal-feedback" id="modalFeedback"></div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script type="module" src="https://pyscript.net/releases/2024.11.1/core.js"></script>
     <script type="py" src="dashboard.py"></script>
