@@ -5,3 +5,5 @@ Fleeter Panel new commit
 -Added The Website
 Fleeter Panel new commit
 -Added Keycloak Integration
+Fleeter Panel new commit
+-Admin can now add new devices
