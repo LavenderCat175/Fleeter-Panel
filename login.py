@@ -1,14 +1,14 @@
 import js
+import asyncio
 from pyodide.ffi import create_proxy, to_js
 from pyscript import window, document
 from urllib.parse import urlencode
 
-#Should run when the user hits "Sign In":
+def sign_in(event):
+    event.preventDefault()
+    asyncio.ensure_future(_sign_in_async(event))
 
-print("hello")
-
-async def sign_in(event):
-    event.preventDefault()  # Stops the form from submitting and refreshing the page
+async def _sign_in_async(event):
 
     ip       = document.getElementById("ip").value.strip()
     email    = document.getElementById("email").value.strip()
@@ -37,7 +37,6 @@ async def sign_in(event):
     btn.textContent = "Connecting..."
     btn.disabled = True
     
-    #Asking Keycloak for a tokenn
     print("[Login] Requesting token from Keycloak...")
     token_url = f"http://{ip}:7777/keycloak/realms/fleeter-server/protocol/openid-connect/token"
     body= urlencode({
@@ -45,6 +44,7 @@ async def sign_in(event):
         "client_id": "fleeter-panel",
         "username": email,
         "password": password,
+        "scope": "openid profile",
     })
 
     try:
@@ -66,7 +66,6 @@ async def sign_in(event):
         document.getElementById("ipError").textContent = "Failed to authenticate with Keycloak."
         return
     
-    #Connect to Socketio with the token 
     print("[Login] Connecting to Socket.IO server...")
     socket = window.io(f"http://{ip}:7777/enforcer", to_js({
         "path":        "/socket",
@@ -74,8 +73,6 @@ async def sign_in(event):
         "timeout":      5000,
         "auth":         {"token": token}
     }))
-
-    print("hello")
 
     def on_connect():
         print("[Login] Connected! Redirecting to dashboard...")

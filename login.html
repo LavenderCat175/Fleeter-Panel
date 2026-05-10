@@ -1,4 +1,3 @@
-<!--Commit 29/05: This Page grew up and is no longer a mockup. Added the Socketio and pyscript libraries figuring it out along pyodide is a hastle, and I still don't quite understand them right now. I'll have to dig in. I also added a logo. This page is likely to not be modified further in the forseeable future.-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,12 +31,12 @@
                     <div class="error-message" id="ipError">Please enter a valid IP</div>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email Address</label>
+                    <label for="email">Username</label>
                     <div class="input-with-icon">
-                        <i class="fa fa-envelope"></i>
-                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                        <i class="fa fa-user"></i>
+                        <input type="text" id="email" class="form-control" placeholder="Enter your username" required>
                     </div>
-                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                    <div class="error-message" id="emailError">Please enter a valid username</div>
                 </div>
                 <div class="divider"></div>
                 <div class="form-group">
@@ -51,7 +50,7 @@
                             </div>
                         </button>
                     </div>
-                    <div class="error-message" id="passwordError">I'm sure you can think of something more creative you imbecile</div>
+                    <div class="error-message" id="passwordError">Please enter your password.</div>
                 </div>
                 <button type="submit" class="button" id="loginButton">
                     <i class="fa fa-sign-in"></i>

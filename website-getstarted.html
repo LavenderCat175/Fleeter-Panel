@@ -20,65 +20,34 @@
                 <h2>Download Fleeter</h2>
                 <p>Ready to take control? Download Fleeter now and experience the ultimate remote locking solution. Click the button below to get started.</p>
                 <button class="download-button">
-                    <a href="https://github.com/resyntax"><i class="fa fa-download"></i> Download Now</a>
+                    <a href="login.html"><i class="fa fa-download"></i> Start Now!</a>
                 </button>
             </div>
             <div class="wiki">
                 <div class="wiki-step">
                     <h2>What is Fleeter?</h2>
-                    <p>Fleeter is a lightweight, real-time remote device management system designed to let an administrator monitor and control a fleet of computers from a single web-based dashboard. The core idea is simple: you have a set of machines you want to manage, and you want to be able to see their status and lock or unlock their screens instantly, from anywhere on the network, without physically touching them.</p>
-                    <p>The name "fleet" refers to the collection of managed devices. Each device in the fleet runs a small background agent that keeps it connected to a central server. The administrator connects to that same server through a web dashboard and issues commands. Everything happens in real time over a persistent WebSocket connection, meaning there is no polling, no page refreshing, and no noticeable delay between sending a command and seeing it take effect on the target machine.</p> 
+                    <p>Fleeter came about because of a need to remotely control a group of class computers. We were unhappy with the existing apps and decided to replicate the DFG systems, in a more professional way than what we are used to. Enforcers (admins) can connect to Fleet devices and block their screens.</p> 
                 </div>
                 <div class="divider">
                     <hr>
                 </div>
                 <div class="wiki-step">
-                    <h2>Architecture Overview</h2>
-                    <p>Fleeter is split into three distinct components that each play a specific role. They are FleeterManager, FleeterServer, and FleeterPanel. These three pieces are designed to work together but remain independent — each one can be developed, updated, or replaced without breaking the others, as long as the communication protocol between them stays consistent.</p>
-                    <p>The general flow is as follows. FleeterManager runs on each managed device and stays connected to FleeterServer. FleeterPanel is opened by the administrator in a browser and also connects to FleeterServer. The server sits in the middle and routes information between the two sides. The administrator never communicates directly with the managed devices — everything goes through the server.</p>
-                    <h2>Components</h2>
-                    <h3>FleeterManager</h3>
-                    <p>FleeterManager is the client agent. It is a Python application that is installed and run on every machine you want to manage. Once started, it reads a configuration file to find the server address, loads an authentication token, and opens a persistent WebSocket connection to the server on the /fleet namespace.</p>
-                    <p>From that point on, FleeterManager does two things on a continuous loop. First, it sends a heartbeat to the server every second. This heartbeat is a small message containing the device's current blocked status — essentially the machine checking in to say "I am here and this is my current state." Second, it listens for incoming control commands from the server. When a command arrives telling it to block, it suppresses all keyboard and mouse input using the pynput library and simultaneously launches a full-screen dark window using tkinter to cover the display. When a command arrives telling it to unblock, it reverses both of those actions.</p>
-                    <p>The blocking mechanism is intentionally layered. Input suppression alone might not be enough if the user finds a way to interact with the system through another means, so the visual overlay reinforces it. The overlay runs in a completely separate process rather than a thread, which means it is resilient — even if the main application encounters an issue, the blocking window stays up until explicitly told to close.</p>
-                    <p>Authentication is handled through JWT tokens. Each device has a token file stored locally in the res/ directory. When connecting to the server, FleeterManager passes this token as part of the connection handshake. The server verifies it against a database of registered devices before allowing the connection. If the token is invalid or expired, the connection is refused.</p>
-                    <p>FleeterManager will automatically attempt to reconnect if the server goes down or the connection drops. The reconnection interval is configurable in res/config.ini.</p>
-                    <h3>FleeterServer</h3>
-                    <p>FleeterServer is the backbone of the system. It is an asynchronous Python server built on Socket.IO and Uvicorn. It runs locally on port 3030 and handles all communication between FleeterManager instances and FleeterPanel. It does not have any HTTP endpoints — all communication is event-based over WebSocket.</p>
-                    <p>The server maintains two namespaces. The /fleet namespace is where managed devices connect. The /enforcer namespace is where the administrator's dashboard connects. These two namespaces are kept separate so that fleet devices and admin clients never directly interact with each other — the server mediates everything.</p>
-                    <p>When a fleet device sends a heartbeat, the server receives it, updates that device's state in memory, and forwards the heartbeat to any connected enforcer clients. This is how the dashboard gets live status updates. When an enforcer client sends a fleet_control command, the server looks up the target devices, finds their active socket sessions, and forwards the command to each one as a control event. The fleet devices receive it and act on it immediately.</p>
-                    <p>Device state is kept in memory in a structure called SessionTracker. This means it is not persisted to disk — if the server restarts, all session state is lost and devices need to reconnect to re-establish their presence. Connected devices are tracked by both their socket session ID and their fleet device ID, allowing lookups from either direction.</p>
-                    <p>The server also manages two separate databases. One is for fleet device registration and JWT token management. The other is for admin user authentication, storing usernames and Argon2-hashed passwords. Both are SQLite databases. A command-line tool called fleeter_cli.py is provided for managing these databases, registering new devices, generating tokens, and setting up the server's cryptographic keys.</p>
-                    <h3>FleeterPanel</h3>
-                    <p>FleeterPanel is the administrator's dashboard. It is a web application built with HTML, CSS, and Python via PyScript. PyScript allows Python code to run directly in the browser using WebAssembly, which means the dashboard logic is written in Python rather than JavaScript, with the exception of the Socket.IO connection which relies on the JavaScript Socket.IO client library loaded from a CDN.</p>
-                    <p>The dashboard consists of two pages. The login page asks for the server IP address, an email, and a password. On submission, it attempts to connect to the server's /enforcer namespace. If the connection succeeds, the server IP is saved to the browser's localStorage and the user is redirected to the main dashboard. If it fails, an error is shown.</p>
-                    <p>The main dashboard page connects to the server on load and begins listening for heartbeat events forwarded from fleet devices. Each time a heartbeat arrives from a device that has not been seen before, a new tile is generated dynamically and added to the grid. Each time a heartbeat arrives from a known device, the tile's status indicator is updated in real time. Tiles are colour-coded by index and display the device ID and current status.</p>
-                    <p>Clicking a tile flips it over with a 3D animation and opens a sidebar panel on the right side of the screen. The sidebar displays the device's full ID, its current status, and a block or unblock button depending on its current state. Pressing the button sends a fleet_control event to the server targeting that specific device, which then relays it as a control command to the fleet agent running on that machine. The sidebar and tile status update immediately to reflect the new state without waiting for the next heartbeat.</p>
-                </div>
-                <div class="divider">
-                    <hr>
-                </div>
-                <div class="wiki-step">
-                    <h2>Communication Protocol</h2>
-                    <p>All communication in Fleeter uses the Socket.IO protocol over WebSocket. The following events define the entire protocol contract.</p>
-                    <p>On the /fleet namespace, fleet devices send a heartbeat event every second with the payload {"blocked": bool}. The server receives this and forwards it to enforcer clients as {"device_id": string, "blocked": bool}. The server also sends a control event to fleet devices when triggered by an enforcer command. The payload is {"blocked": bool}, and the device acts on it immediately.</p>
-                    <p>On the /enforcer namespace, the dashboard sends a fleet_control event to issue commands. The payload structure is {"devices": [device_id_1, device_id_2, ...], "orders": {"control": {"blocked": true or false}}}. The devices array specifies which machines to target. The orders dictionary specifies what commands to send — the key becomes the event name sent to the fleet device, and the value becomes the payload. This design means the protocol is extensible: new command types can be added simply by defining new keys in orders, as long as FleeterManager is updated to handle them.</p>
-                    <p>Authentication on the /fleet namespace is enforced through JWT tokens passed in the Socket.IO auth field at connection time. Authentication on the /enforcer namespace is defined in the server but is not yet enforced in the current implementation, meaning any client can connect to it without credentials.</p>
-                </div>
-                <div class="divider">
-                    <hr>
-                </div>
-                <div class="wiki-step">
-                    <h2>Setup and Deployment</h2>
-                    <p>To deploy Fleeter, the server must be set up first. This involves running the CLI tool to generate SSL certificates, create the JWT keypair, and initialise both databases. Fleet devices must be registered by UUID using the CLI, and a token file must be generated for each one and distributed to the corresponding machine. The FleeterManager application on each machine must have its config.ini pointing to the correct server address.</p>
-                    <p>FleeterPanel does not require installation. It is a static web application that can be opened directly in a browser. The server IP is entered at login time, making it portable — the same dashboard files can be used to connect to any Fleeter server by simply entering a different IP address.</p>    
-                </div>
-                <div class="divider">
-                    <hr>
-                </div>
-                <div class="wiki-step">    
-                    <h2>Summary</h2>
-                    <p>Fleeter is a practical, event-driven remote device management system built around a simple protocol. A background agent on each managed machine maintains a live connection to a central server and reports its state every second. An administrator opens a web dashboard that connects to the same server, receives those status updates in real time, and can lock or unlock any machine with a single click. The architecture is deliberately minimal — three components, one protocol, and a clear separation of responsibilities between them.</p>
+                    <h2>Fleeter Components</h2>
+                    <h3>Server</h3>
+                    <p>Fleeter Server is the core of Fleeter. It is where both the Enforcers and the Fleet connect and manages information exchange between the two. It is made up of custom and off the shelf solutions.</p>
+                    <p>Fleeter app is an asynchronous socket.io server that handles inbound and outbound traffic.</p>
+                    <p>Keycloak is an authentication server that verifies credentials of enforcers.</p>
+                    <p>Postgres stores the Keycloak data.</p>
+                    <p>nginx proxies all this traffic into one port to permit easier management and connection attempts. This is all managed by a compose instance (podman and docker compatible).</p>
+                    <p>The off the shelf solutions were intentionally chosen as this is how many corporations operate. Programming everything from scratch is useful for learning, but a product's only value is how it functions. Specialised software is often more secure and well maintained.</p>
+
+                    <h3>Manager</h3>
+                    <p>Managers manage the Fleet by running on the devices. It is a simple asynchronous socket.io client that connects via the /fleet namespace. The client is authenticated with a JWT token encrypted and issued by the server; it contains key connection info.</p>
+                    <p>To block the devices, a tkinter (chosen for compatibility) window is used as a visual block and pynput halts mouse and keyboard input. Managers send a heartbeat to the server every second, notifying it of their status.</p>
+
+                    <h3>Panel</h3>
+                    <p>The panel is a python based web app running on pyscript, a cutting edge WASM based javascript alternative. It however does rely on the socket.io javascript client. It is portable and can be used locally or remotely.</p>
+                    <p>To authenticate with the Fleeter Server, it connects to the exposed keycloak instance and uses user credentials to issue a token, which it then passes to the socket.io connection request. It communicates to the server on the /enforcer namespace.</p>
                 </div>
             </div>
         </div>

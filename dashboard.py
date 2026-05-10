@@ -2,8 +2,7 @@ import js
 from pyscript import window, document
 from pyodide.ffi import create_proxy, to_js
 
-#Demo mode: Creates a set of tiles and ignores the server connection. For testing the ui only. 
-DEMO_MODE = True
+DEMO_MODE = False
 
 DEMO_DEVICES = [
     {"device_id": "a1b2c3d4e5f6g7h8", "blocked": False},
@@ -251,6 +250,7 @@ def submit_new_device(event):
         return
 
     def on_token_ready(data):
+        create_tile(device_id, False)
         download_token(device_id, data.new_jwt)
         set_modal_feedback("Device added! Token downloaded.", "success")
         btn.disabled = False
